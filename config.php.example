@@ -1,0 +1,6 @@
+<?php
+    define("host", "localhost");
+    define("db_name", "some_server");
+    define("username", "server_agent");
+    define("password", "secret_password");
+?>

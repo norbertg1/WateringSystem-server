@@ -1,0 +1,14 @@
+#--------------------- Agent for MYSQL --------------------
+mysql_user      =   "python_agent"
+mysql_password  =   "secret_password"
+mysql_host      =   "localhost"
+port            =   "3306"
+#----------------------------------------------------------
+#--------------------- Agent for MQTT ---------------------
+mqtt_username   =   "python_agent"
+mqtt_password   =   "secret_password"
+ca_file_dir     =   "ca.crt"
+cert_file_dir   =   "python.crt"
+key_file_dir    =   "python.key"
+owm_api         =   "secret_api_key"
+#----------------------------------------------------------

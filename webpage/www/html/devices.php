@@ -1,6 +1,6 @@
 <?php
 echo "<table style='border: solid 1px black;'>";
-echo "<tr><th>User</th><th>Device name</th><th>Device ID</th><th>Last on</th><th>on command</th><th>repeat rate</th><th>Irigation time</th><th>legth (s)</th><th>legth (L)</th><th>legth (mm)</th>
+echo "<tr><th>USER_ID</th><th>Device name</th><th>Device ID</th><th>Last on</th><th>on command</th><th>repeat rate</th><th>Irigation time</th><th>legth (s)</th><th>legth (L)</th><th>legth (mm)</th>
 <th>moisture (%)</th><th>irrigation temp.</th><th>temp. points</th><th>m2</th><th>delay(s)</th><th>sleep(s)</th><th>rem. upd.</th><th>rem. log</th><th>Latid.</th><th>Longtd.</th></tr>";
 
 class TableRows extends RecursiveIteratorIterator {

@@ -2,6 +2,7 @@
 server_on_ubuntu/server/webpage/www/html/esp/update/log/**
 server_on_ubuntu/server/webpage/www/html/esp/update/bin/**
 server_on_ubuntu/server/old_mysql_database_2020.3.29/**
+logs/
 
 # keys, certificates
 *.crt

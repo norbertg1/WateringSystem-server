@@ -1,2 +1,0 @@
-@reboot ~/Desktop/WateringSystem/WateringSystem-server/MySQL/mqtt_mysql_handler.sh
-*/15 * * * * ~/Desktop/WateringSystem/WateringSystem-server/MySQL/mqtt_mysql_handler.sh

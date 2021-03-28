@@ -27,7 +27,7 @@ function sendFile($path) {
     readfile($path);
 }
 
-$fp = fopen('/home/odroid/Desktop/server/logs/ESP8266Updater.log', 'a');
+$fp = fopen('/../../../../../logs/ESP8266Updater.log', 'a');
 $date = date("y/m/d - H:i:s ");
 fwrite($fp, $date);
 

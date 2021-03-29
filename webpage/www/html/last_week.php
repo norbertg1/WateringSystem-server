@@ -1,4 +1,6 @@
 <?php
+require_once("session.php");
+require_once("class.user.php");
 echo "<table style='border: solid 1px black;'>";
 echo "<tr><th>Id</th><th>Device name</th><th>Last login</th><th>Temperature</th><th>Humidity</th><th>Moisture</th><th>Pressure</th><th>L</th><th>L/s</th><th>Voltage</th><th>On/Off</th>
 <th>Temp. openweather</th><th>Rain(mm)</th><th>RSSI</th><th>Awake(s)</th><th>Version</th><th>RST reason</th></tr>";
@@ -20,9 +22,6 @@ class TableRows extends RecursiveIteratorIterator {
        echo "</tr>" . "\n";
    }
 }
-	require_once("session.php");
-	
-	require_once("class.user.php");
 	$auth_user = new USER();
 	
 	

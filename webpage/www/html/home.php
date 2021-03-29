@@ -31,7 +31,7 @@ ini_set('display_errors', 1);
 
 </head>
 <body>
-	<img class="hatter" src="/walpappers/<?php print($random_number); ?>.jpg">
+	<img class="hatter" src="/wallpapers/<?php print($random_number); ?>.jpg">
 	<style>	body{color:white}
 			a{color: white;}
 </style>
@@ -62,8 +62,4 @@ ini_set('display_errors', 1);
 	<br><br><br><br>
     <li><a href="logout.php?logout=true"><span class="glyphicon glyphicon-log-out"></span>&nbsp;Sign Out</a></li>
 	  </body>
-
-
-
-
 </html>

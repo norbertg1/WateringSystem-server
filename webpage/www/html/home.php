@@ -1,21 +1,15 @@
 <?php
-ini_set('display_errors', 1);
+require_once("session.php");
+$auth_user = new USER();
 
-	require_once("session.php");
-	
-	require_once("class.user.php");
-	$auth_user = new USER();
-	
-	
-	$user_id = $_SESSION['user_session'];
-	
-	$stmt = $auth_user->runQuery("SELECT * FROM users WHERE USER_ID=:user_id");
-	$stmt->execute(array(":user_id"=>$user_id));
-	
-	$userRow=$stmt->fetch(PDO::FETCH_ASSOC);
-	$random_number = rand (1,17);
-	#<link rel="stylesheet" href="style.css" type="text/css"  />
+$user_id = $_SESSION['user_session'];
 
+$stmt = $auth_user->runQuery("SELECT * FROM users WHERE USER_ID=:user_id");
+$stmt->execute(array(":user_id" => $user_id));
+
+$userRow = $stmt->fetch(PDO::FETCH_ASSOC);
+$random_number = rand(1, 17);
+#<link rel="stylesheet" href="style.css" type="text/css"  />
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">

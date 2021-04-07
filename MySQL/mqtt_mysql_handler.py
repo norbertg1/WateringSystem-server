@@ -19,10 +19,11 @@ import config
 import os 
 
 project_dir = os.path.dirname(os.path.realpath(__file__)) + "/"
+start_date = datetime.datetime.now()
 
 print "MQTT_MySQL handler starting."
-if len(sys.argv) is 1: 
-	me = singleton.SingleInstance() # will sys.exit(-1) if other instance is running
+#if len(sys.argv) is 1: 
+#	me = singleton.SingleInstance() # will sys.exit(-1) if other instance is running
 
 #Ha ez a sor ki van kommentezve akkor ez a process amit a crontabe 15 precenként elindít kiütök egymást
 #ellenben így lehet manuálisan elindítani ezt a kódot módosítás után mert megszünteti az előző futását
@@ -53,10 +54,11 @@ MINIMUM_VALVE_OPEN_VOLTAGE = 3.1
 class database_data:
 	data_table = Table('data', metadata, autoload=True);
 
-	def __init__( self, DEVICE_ID=0, TEMPERATURE=0, HUMIDITY=0, MOISTURE=0, PRESSURE=0, VERSION=0, RST_REASON=0, WATER_VOLUME=0, WATER_VOLUME_X=0, WATER_VELOCITY=0, MM=0, VOLTAGE=0, ON_OFF_STATE=0, TEMPERATURE_POINTS=0, AWAKE_TIME=0, AWAKE_TIME_X=0, RSSI=0, STOP_FLAG = 0,
+	def __init__( self, DEVICE_ID=0, DEVICE_NAME = 0, TEMPERATURE=0, HUMIDITY=0, MOISTURE=0, PRESSURE=0, VERSION=0, RST_REASON=0, WATER_VOLUME=0, WATER_VOLUME_X=0, WATER_VELOCITY=0, MM=0, VOLTAGE=0, ON_OFF_STATE=0, TEMPERATURE_POINTS=0, AWAKE_LENGTH=0, AWAKE_LENGTH_X=0, RSSI=0, STOP_FLAG = 0,
 				  on_time=datetime.datetime.now(), off_time=datetime.datetime.now()):
 
 		self.DEVICE_ID = DEVICE_ID
+		self.DEVICE_NAME = DEVICE_NAME
 		self.TEMPERATURE = TEMPERATURE
 		self.HUMIDITY = HUMIDITY
 		self.MOISTURE = MOISTURE
@@ -72,29 +74,32 @@ class database_data:
 		self.TEMPERATURE_POINTS = TEMPERATURE_POINTS
 		self.on_time = on_time
 		self.off_time = off_time
-		self.AWAKE_TIME = AWAKE_TIME
-		self.AWAKE_TIME_X = AWAKE_TIME_X
+		self.AWAKE_LENGTH = AWAKE_LENGTH
+		self.AWAKE_LENGTH_X = AWAKE_LENGTH_X
 		self.RSSI = RSSI
 		self.STOP_FLAG = STOP_FLAG
 
 	def save_database_data(self):
 		trans = conn.begin()
-		database_data.data_table.insert().execute(DEVICE_ID=self.DEVICE_ID, LAST_LOGIN=time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()), 
+		database_data.data_table.insert().execute(DEVICE_ID=self.DEVICE_ID, DEVICE_NAME=self.DEVICE_NAME, LOGIN_TIME=time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()), 
 													TEMPERATURE=self.TEMPERATURE, HUMIDITY=self.HUMIDITY, MOISTURE=self.MOISTURE, PRESSURE=self.PRESSURE, VERSION=self.VERSION,
 													RST_REASON=self.RST_REASON, WATER_VOLUME=self.WATER_VOLUME, WATER_VELOCITY=self.WATER_VELOCITY, MM=self.MM, VOLTAGE=self.VOLTAGE,
-													ON_OFF_STATE=self.ON_OFF_STATE, TEMP_OPENWEATHER = self.TEMP_OPENWEATHER, RAIN_MM=self.RAIN_MM, RSSI=self.RSSI, AWAKE_TIME=self.AWAKE_TIME)
+													ON_OFF_STATE=self.ON_OFF_STATE, TEMP_OPENWEATHER = self.TEMP_OPENWEATHER, RAIN_MM=self.RAIN_MM, RSSI=self.RSSI, AWAKE_LENGTH=self.AWAKE_LENGTH)
 		trans.commit()
 
 	def get_area(self):
 		column=devices_table.select(devices_table.c.DEVICE_ID == self.DEVICE_ID).execute().fetchone()
 		return column['AREA']
 	
+	def get_device_name(self):
+		column=devices_table.select(devices_table.c.DEVICE_ID == self.DEVICE_ID).execute().fetchone()
+		self.DEVICE_NAME = column['DEVICE_NAME']
+		return column['DEVICE_NAME']
+
 	def end(self):
 		print "Local time:" + time.strftime("%Y-%b-%d %H:%M:%S", time.localtime()) + "\n-----------------SLEEP------SLEEP------SLEEP------SLEEP------SLEEP------SLEEP------SLEEP--------------------------------\n\n"
 		data[self.DEVICE_ID].save_database_data()
 		del data[self.DEVICE_ID]; #ezt már nem tudom mi, helyetesitem
-		#if not data[self.DEVICE_ID].on_time < datetime.datetime.now() < data[self.DEVICE_ID].off_time:
-			#del data[self.DEVICE_ID]; #ezt már nem tudom mi	Törölni 2018.11.26
 
 def on_connect(client, userdata, rc, m):
 	client.subscribe("+/TEMPERATURE")
@@ -126,6 +131,7 @@ def handle_database(device_id, variable_type, value):
 		data[device_id] = database_data()
 		#Timer(120.0, data[device_id].end).start()
 		data[device_id].DEVICE_ID = device_id
+		print "DEVICE NAME:", data[device_id].get_device_name()
 		print "get area:", data[device_id].get_area()
 	if(data.has_key(device_id)):
 		print (variable_type + ':' + value)
@@ -138,13 +144,13 @@ def handle_database(device_id, variable_type, value):
 		if(variable_type == 'FLOWMETER_VELOCITY'):  data[device_id].WATER_VELOCITY = value
 		if(variable_type == 'VOLTAGE'):             data[device_id].VOLTAGE = value
 		if(variable_type == 'RSSI'):                data[device_id].RSSI = value
-		if(variable_type == 'AWAKE_TIME'):          data[device_id].AWAKE_TIME = value						#ezt az értéket a kapcsolat utolsó pillanatában küldi el a kliens
-		if(variable_type == 'AWAKE_TIME_X'):        data[device_id].AWAKE_TIME_X = value					#ezt az értéket a kapcsolat első pillanatában küldi el a kliens
+		if(variable_type == 'AWAKE_TIME'):          data[device_id].AWAKE_LENGTH = value						#ezt az értéket a kapcsolat utolsó pillanatában küldi el a kliens
+		if(variable_type == 'AWAKE_TIME_X'):        data[device_id].AWAKE_LENGTH_X = value					#ezt az értéket a kapcsolat első pillanatában küldi el a kliens
 		if(variable_type == 'READY_FOR_DATA'):      send_message_to_device(device_id, data)
 		if(variable_type == 'FLOWMETER_VOLUME_X'):  data[device_id].WATER_VOLUME_X = value; get_mm(device_id, value)	#ezt az értéket a kapcsolat utolsó pillanatában küldi el a kliens
 		if(variable_type == 'FLOWMETER_VOLUME'):   	data[device_id].WATER_VOLUME = value; 	get_mm(device_id, value)	#ezt az értéket a kapcsolat első pillanatában küldi el a kliens
 		if(variable_type == 'ON_OFF_STATE'):                #ha be volt kapcsolva a locsolás (amit az adatbázisból olvasok ki) és most olyan érték jön,
-			collumn = data_table.select(data_table.c.DEVICE_ID == device_id).order_by(desc('LAST_LOGIN')).execute().fetchone()
+			collumn = data_table.select(data_table.c.DEVICE_ID == device_id).order_by(desc('LOGIN_TIME')).execute().fetchone()
 			if collumn is not None:
 				if collumn['ON_OFF_STATE'] == 1 and int(value) == 0:   #hogy pont most kapcsolt ki, akkor elmentem a kikapcsolási időpontot az adatbázisba
 					conn.execute("UPDATE devices SET LAST_ON_TIME = \'"+ time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()) + "\' where DEVICE_ID = \'" + device_id + "\'")
@@ -153,8 +159,6 @@ def handle_database(device_id, variable_type, value):
 			print "Local time:" + time.strftime("%Y-%b-%d %H:%M:%S", time.localtime()) + "\n-----------------SLEEP------SLEEP------SLEEP------SLEEP------SLEEP------SLEEP------SLEEP--------------------------------\n\n"
 			data[device_id].save_database_data()
 			del data[device_id]; #ezt már nem tudom mi, helyetesitem
-			#if not data[device_id].on_time < datetime.datetime.now() < data[device_id].off_time:
-			#	del data[device_id]; #ezt már nem tudom mi	Törölni 2018.11.26
 
 def get_mm(device_id, value):
 	column=devices_table.select(devices_table.c.DEVICE_ID == device_id).execute().fetchone()
@@ -225,15 +229,15 @@ def scheduled_irrigation(device_id, data_device, weather_code):		#data_device-ot
 				SCHEDULED_LITERS = get_liters(device_id, row_scheduled_irrigation_table['LITERS'], row_scheduled_irrigation_table['MM'])	#mm to liter konverziót végez
 				IRRIGATION_ID = str(row_scheduled_irrigation_table["IRRIGATION_ID"])
 		#↓↓↓↓ Innét frissítti az adatbázisban az eltelt öntözési időhosszt és a vízmennyiséget ↓↓↓↓
-				if row_scheduled_result["REAL_LENGTH"] < float(data_device[device_id].AWAKE_TIME_X):	#Ha az öntözés nem szakad meg, vagyis nem kapcsol ki a kliens közben (pl. szar wifi végett)
-					CURRENT_LENGTH = float(data_device[device_id].AWAKE_TIME_X)
+				if row_scheduled_result["REAL_LENGTH"] < float(data_device[device_id].AWAKE_LENGTH_X):	#Ha az öntözés nem szakad meg, vagyis nem kapcsol ki a kliens közben (pl. szar wifi végett)
+					CURRENT_LENGTH = float(data_device[device_id].AWAKE_LENGTH_X)
 					CURRENT_LITERS = get_liters(device_id, float(data_device[device_id].WATER_VOLUME_X), float(data[device_id].MM))		#mm to liter konverziót végez
 					print " Irrigation_result_table UPDATE"
 					conn.execute("UPDATE scheduled_irrigation_result SET REAL_LENGTH = " + str(CURRENT_LENGTH) + ", REAL_LITERS = " 
 						+ str(data[device_id].WATER_VOLUME_X) + ", REAL_MM = " + str(float(data[device_id].MM)) 
 						+ " WHERE IRRIGATION_ID = \'" + IRRIGATION_ID + "\' and DATE(REAL_DATETIME) = \'" + (datetime.datetime.now().strftime('%Y-%m-%d')) + "\';")
 				else:	#Ha az öntözés megszakad (pl. szar wifi végett)
-					CURRENT_LENGTH = row_scheduled_result["REAL_LENGTH"] + float(data_device[device_id].AWAKE_TIME_X)
+					CURRENT_LENGTH = row_scheduled_result["REAL_LENGTH"] + float(data_device[device_id].AWAKE_LENGTH_X)
 					CURRENT_LITERS = get_liters(device_id, row_scheduled_result["REAL_LITERS"] + float(data_device[device_id].WATER_VOLUME_X), row_scheduled_result["REAL_MM"] + float(data[device_id].MM))		#mm to liter konverziót végez
 					print " Az öntözés megszakadt idő: ", CURRENT_LENGTH, "\bs liter:", CURRENT_LITERS, "\n Irrigation_result_table UPDATE"
 					conn.execute("UPDATE scheduled_irrigation_result SET REAL_LENGTH = " + str(CURRENT_LENGTH) + ", REAL_LITERS = " 
@@ -342,11 +346,11 @@ def irrigation_on_moisture():
 		row_devices=devices_table.select(devices_table.c.DEVICE_ID == row_pairs["VALVE_ID"]).execute().fetchone() #kiválasztom azt a sort devices táblából ahol a device_ID egyezik a pairsban levővel
 		if row_devices["MOISTURE_PERCENT"] == 0: continue		#és megnézem hogy arra a szelepre van-e beállítva a devicesban öntözési nedvesség ha nincs akkor ugrok tovább
 		collumn_data = data_table.select().where((data_table.c.DEVICE_ID == row_pairs["SENSOR_ID"])		#Ehhez a szelephez tartozó SENSOR_ID-vel dolgozok tovabb, mert az méri a nedvességet
-		& (data_table.c.LAST_LOGIN > (datetime.datetime.now() - datetime.timedelta(hours=delta_hours)))).order_by(desc('LAST_LOGIN')).execute()
+		& (data_table.c.LOGIN_TIME > (datetime.datetime.now() - datetime.timedelta(hours=delta_hours)))).order_by(desc('LOGIN_TIME')).execute()
 		moisture = 0; loop = 0                
 		for row_data in collumn_data:
-			print row_data["DEVICE_ID"], row_data["LAST_LOGIN"], row_data["MOISTURE"]
-			if(MOISTURE_HOURS_WINDOW1 < row_data["LAST_LOGIN"].hour < MOISTURE_HOURS_WINDOW2):
+			print row_data["DEVICE_ID"], row_data["LOGIN_TIME"], row_data["MOISTURE"]
+			if(MOISTURE_HOURS_WINDOW1 < row_data["LOGIN_TIME"].hour < MOISTURE_HOURS_WINDOW2):
 				moisture +=  row_data["MOISTURE"] #össze van számolva az adott időablakban mért talajnedvesség
 				loop += 1
 		if loop > 0: moisture = moisture/loop
@@ -427,9 +431,9 @@ while 1:
 	print "loop completed:", loop, "\n************************************************************************************************\n"
 	loop +=1    
 	time.sleep(600)
-	if datetime.datetime.now().weekday() is 6 and datetime.datetime.now().hour is 0 and datetime.datetime.now().minute<10:
+	if datetime.datetime.now().isocalendar()[1] is not start_date.isocalendar()[1]:
 		print "============================================================================================================================="
 		print "========================================== END OF THE WEEK==================================================================="
 		print "============================================================================================================================="
-		subprocess.Popen(["sh", "mqtt_mysql_handler.sh"] + sys.argv[1:])
+		subprocess.Popen(["sh", project_dir + "mqtt_mysql_handler.sh"] + sys.argv[1:])
 		break

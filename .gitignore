@@ -8,6 +8,7 @@ logs/
 *.crt
 *.csr
 *.key
+*.srl
 
 # Object files
 *.o

@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS `users` (
 
 CREATE TABLE devices (
 	USER_ID					    int(11)                 	COMMENT 'Ez alapján párosítódnak a felhasználók az eszközökkel.',
-	DEVICE_NAME					varchar(127)				COMMENT 'Ezt a felhasználó szabadon választhatja',
+	DEVICE_NAME					varchar(127)				COMMENT 'Ezt a felhasználó szabadon választhatja és cserélgetheti is. Minden bejelentkezéskor átmásolódik a data táblába, így ezzel az akutális értékeknek rövid leírás név',
 	DEVICE_ID					varchar(127)				COMMENT 'A hardver egyedi azonosítója, hardverből kiolvasható. Csak olyan eszköz engedélyezett ami szerepel ebben a táblában.',
 	LAST_ON_TIME				datetime					COMMENT 'Az utolsó öntözés időpontja',
 	ON_COMMAND					bool						COMMENT 'Kézi vezérlés: 1 -> elindul az öntözés, 2 - winter state -> nem mukodik mert ujraindulasnal mindig becsukodik aminek hardveres okai vannak',
@@ -43,7 +43,8 @@ CREATE TABLE devices (
 
 CREATE TABLE data (
 	DEVICE_ID			varchar(127) NOT NULL,
-	LAST_LOGIN			datetime,
+    DEVICE_NAME			varchar(127)            COMMENT 'A devices táblából másolódik ide az eszköz aktuális neve',
+	LOGIN_TIME			datetime,
 	TEMPERATURE			float,
 	HUMIDITY			smallint,
 	MOISTURE			smallint,
@@ -54,7 +55,7 @@ CREATE TABLE data (
     VOLTAGE				float,
     ON_OFF_STATE		bool 					COMMENT 'Ha 1 ON_LENGTH álltal elindított öntözés, 2 - Winter state (hosszú távon nyitva van), 10 - és felette valamilyen hardveres hibára ualó jel (befagyás is ezt okoz) bővebben: kliens forráskódja',
 	RSSI				int,
-	AWAKE_TIME			float,
+	AWAKE_LENGTH		float,
     TEMP_OPENWEATHER	float 					COMMENT 'Openweathermaps-ról származó hőmérsékletadat',
     RAIN_MM             float 					COMMENT '3 óra esőzése',
     VERSION             varchar(10),

@@ -33,7 +33,7 @@ class TableRows extends RecursiveIteratorIterator {
 	$userRow=$stmt->fetch(PDO::FETCH_ASSOC);
 
 
-    $result = $auth_user->runQuery("SELECT * FROM last_week order by LAST_LOGIN desc");
+    $result = $auth_user->runQuery("SELECT * FROM last_week order by LOGIN_TIME desc");
     $result->execute();
 
     $result->setFetchMode(PDO::FETCH_ASSOC);

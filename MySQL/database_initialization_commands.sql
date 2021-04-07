@@ -110,9 +110,9 @@ CREATE TABLE pairs (
 	SENSOR_ID   		varchar(20)
 ) COMMENT = 'Az érzékelők álltal mért adat összepárosítása a szelepvezérlőkkel. Ez jelenelg akkor szükséges ha talajnedvesség függvénéyben szeretnénk locsolni';
 
-CREATE VIEW data_last_week AS SELECT * from data WHERE LAST_LOGIN >= DATE_ADD(CURDATE(),INTERVAL -7 DAY);
-CREATE VIEW last_week as SELECT data.DEVICE_ID, devices.DEVICE_NAME, data.LAST_LOGIN, data.TEMPERATURE, data.HUMIDITY, data.MOISTURE, data.PRESSURE, data.WATER_VOLUME, data.WATER_VELOCITY, data.VOLTAGE, data.ON_OFF_STATE, data.TEMP_OPENWEATHER, data.RAIN_MM, data.RSSI, data.AWAKE_TIME, data.VERSION, data.RST_REASON from data  JOIN devices ON data.DEVICE_ID = devices.DEVICE_ID WHERE LAST_LOGIN >= DATE_ADD(CURDATE(),INTERVAL -7 DAY);
-CREATE VIEW last_week_desc as SELECT data.DEVICE_ID, devices.DEVICE_NAME, data.LAST_LOGIN, data.TEMPERATURE, data.HUMIDITY, data.MOISTURE, data.PRESSURE, data.WATER_VOLUME, data.WATER_VELOCITY, data.VOLTAGE, data.ON_OFF_STATE, data.TEMP_OPENWEATHER, data.RAIN_MM, data.RSSI, data.AWAKE_TIME, data.VERSION, data.RST_REASON from data  JOIN devices ON data.DEVICE_ID = devices.DEVICE_ID WHERE LAST_LOGIN >= DATE_ADD(CURDATE(),INTERVAL -7 DAY) ORDER BY LAST_LOGIN desc;
+CREATE VIEW data_last_week AS SELECT * from data WHERE LOGIN_TIME >= DATE_ADD(CURDATE(),INTERVAL -7 DAY);
+CREATE VIEW last_week as SELECT data.DEVICE_ID, data.DEVICE_NAME, data.LOGIN_TIME, data.TEMPERATURE, data.HUMIDITY, data.MOISTURE, data.PRESSURE, data.WATER_VOLUME, data.WATER_VELOCITY, data.VOLTAGE, data.ON_OFF_STATE, data.TEMP_OPENWEATHER, data.RAIN_MM, data.RSSI, data.AWAKE_LENGTH, data.VERSION, data.RST_REASON from data  JOIN devices ON data.DEVICE_ID = devices.DEVICE_ID WHERE LOGIN_TIME >= DATE_ADD(CURDATE(),INTERVAL -7 DAY);
+CREATE VIEW last_week_desc as SELECT data.DEVICE_ID, data.DEVICE_NAME, data.LOGIN_TIME, data.TEMPERATURE, data.HUMIDITY, data.MOISTURE, data.PRESSURE, data.WATER_VOLUME, data.WATER_VELOCITY, data.VOLTAGE, data.ON_OFF_STATE, data.TEMP_OPENWEATHER, data.RAIN_MM, data.RSSI, data.AWAKE_LENGTH, data.VERSION, data.RST_REASON from data  JOIN devices ON data.DEVICE_ID = devices.DEVICE_ID WHERE LOGIN_TIME >= DATE_ADD(CURDATE(),INTERVAL -7 DAY) ORDER BY LOGIN_TIME desc;
 
 #insert into users (USER_NAME,USER_EMAIL,USER_PASSWORD) values('anna','valaki@valaki.com','titok');
 insert into devices values('1','locsolo1','288f83-1640ef','2015-06-30 10:00:00',0,0,'10:00:00',0,0,10,0,9,0,25,30,300,0,0,48.1520,17.8654,0,NULL,0);

@@ -9,7 +9,6 @@ ini_set('display_errors', 1);
 $log_dir = "../../../../../logs";
 $fp = fopen($log_dir.'/ESP8266Updater.log', 'a');
 ini_set("error_log", $log_dir.'/ESP8266Updater.log');
-error_log( "Hello, errors!" );
 
 header('Content-type: text/plain; charset=utf8', true);
 
@@ -33,7 +32,7 @@ function sendFile($path) {
 }
 
 $date = date("y/m/d - H:i:s ");
-fwrite($fp, $date);  
+fwrite($fp, $date);
 
 if(!check_header('HTTP_USER_AGENT', 'ESP8266-http-Update')) {
     header($_SERVER["SERVER_PROTOCOL"].' 403 Forbidden', true, 403);
@@ -61,8 +60,8 @@ if(
 
 $db = array(				//CASE SENSITIVE!!!!!!!!!!!!!!!!!
 //-------------------------------------------------------------szelep
-    "5C:CF:7F:28:8F:83" => "v1.69old.1",		//locsolo1 ez a régi
-    "5C:CF:7F:79:50:41" => "v1.69.1",			//locsolo2
+    "5C:CF:7F:28:8F:83" => "v1.64old.1",		//locsolo1 ez a régi
+    "5C:CF:7F:79:50:41" => "v1.64.1",			//locsolo2
 //-------------------------------------------------------------szenzor
     "84:F3:EB:82:03:9A" => "v1.51.0"            //szenzor1
 );
@@ -72,7 +71,7 @@ if(!isset($db[$_SERVER['HTTP_X_ESP8266_STA_MAC']])) {
 }
 
 //$localBinary = "client.ino.generic.bin";
-$localBinary = "/bin/".$db[$_SERVER['HTTP_X_ESP8266_STA_MAC']].".bin";
+$localBinary = "bin/".$db[$_SERVER['HTTP_X_ESP8266_STA_MAC']].".bin";
 
 // Check if version has been set and does not match, if not, check if
 // MD5 hash between local binary and ESP8266 binary do not match if not.
@@ -86,7 +85,7 @@ fwrite($fp, $_SERVER['HTTP_X_ESP8266_VERSION']);
 fwrite($fp, " desired version: ");
 fwrite($fp, $db[$_SERVER['HTTP_X_ESP8266_STA_MAC']]);
 fwrite($fp, "   ");
-fwrite($fp, "/bin/".$db[$_SERVER['HTTP_X_ESP8266_STA_MAC']].".bin");
+fwrite($fp, "bin/".$db[$_SERVER['HTTP_X_ESP8266_STA_MAC']].".bin");
 
 
 if(/*!check_header('HTTP_X_ESP8266_SDK_VERSION') &&*/ array_key_exists($_SERVER['HTTP_X_ESP8266_STA_MAC'], $db) && ($db[$_SERVER['HTTP_X_ESP8266_STA_MAC']] != $_SERVER['HTTP_X_ESP8266_VERSION']) && ($_SERVER["HTTP_X_ESP8266_SKETCH_MD5"] != md5_file($localBinary))){

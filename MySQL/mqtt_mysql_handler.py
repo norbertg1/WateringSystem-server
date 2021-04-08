@@ -22,8 +22,8 @@ project_dir = os.path.dirname(os.path.realpath(__file__)) + "/"
 start_date = datetime.datetime.now()
 
 print "MQTT_MySQL handler starting."
-#if len(sys.argv) is 1: 
-#	me = singleton.SingleInstance() # will sys.exit(-1) if other instance is running
+if len(sys.argv) is 1: 
+	me = singleton.SingleInstance() # will sys.exit(-1) if other instance is running
 
 #Ha ez a sor ki van kommentezve akkor ez a process amit a crontabe 15 precenként elindít kiütök egymást
 #ellenben így lehet manuálisan elindítani ezt a kódot módosítás után mert megszünteti az előző futását

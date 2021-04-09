@@ -22,3 +22,8 @@ sudo apt-get install mosquitto-clients  #mosquitto_sub -p 1883 -t */* -u anna -P
 sudo apt-get install nano
 export EDITOR=nano
 
+#Versions installed on 9.4.2020
+#Mosquitto 1.4.8
+#mqtt-paho 1.5.1
+#Python 2.7.12
+#MySQL 5.7.33-0ubuntu0.16.04.1-log

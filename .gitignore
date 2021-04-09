@@ -9,8 +9,9 @@ logs/
 *.csr
 *.key
 *.srl
-PEMpasshphrase.pass
+PEMpassphrase.pass
 esp8266_certificates.h
+esp_certificates.c
 
 # Object files
 *.o

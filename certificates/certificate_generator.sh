@@ -13,6 +13,7 @@ openssl genrsa -out python.key 2048
 openssl req -out python.csr -key python.key -new -subj '/CN=localhost'
 openssl x509 -req -in python.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out python.crt -days 10700 -passin file:PEMpassphrase.pass
 
+sudo service mosquitto restart
 
 #For ESP8266
 openssl x509 -in esp.crt -out esp8266.bin.crt -outform DER
@@ -32,4 +33,3 @@ sed -z '0,/-/s//"-/;s/\n/\\n" \\\n"/g;s/\\n" \\\n"$/";\n\n/g' esp.crt >> esp_cer
 echo "const char ESP_RSA_key[] = \\" >> esp_certificates.c;
 sed -z '0,/-/s//"-/;s/\n/\\n" \\\n"/g;s/\\n" \\\n"$/";/g' esp.key >> esp_certificates.c     #replace first occurance of - with "-  ;  all newlnies with \n " \ \n", except last newline where just add ;"
 
-sudo service mosquitto restart

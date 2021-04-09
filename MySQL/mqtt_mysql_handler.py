@@ -408,12 +408,13 @@ print "Server is starting in 3s"
 time.sleep(3)
 client = mqtt.Client(client_id="MQTT MYSQL Handler")
 client.username_pw_set(config.mqtt_username,password = config.mqtt_password)
-client.tls_set(project_dir + config.ca_file_dir,certfile=project_dir + config.cert_file_dir,keyfile=project_dir + config.key_file_dir)
+#client.tls_set(project_dir + config.ca_file_dir,certfile=project_dir + config.cert_file_dir,keyfile=project_dir + config.key_file_dir)
 client.on_connect = on_connect
 client.on_message = on_message
 client.on_disconnect = on_disconnect
+#client = mqtt.Client(transport="tcp")
 client.connect("localhost",8883)
-client.loop_start()
+print client.loop_start()
 
 today = datetime.datetime.now().day
 loop = 0
